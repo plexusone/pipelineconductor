@@ -3,7 +3,7 @@ module github.com/plexusone/pipelineconductor
 go 1.26.2
 
 require (
-	github.com/cedar-policy/cedar-go v1.6.1
+	github.com/cedar-policy/cedar-go v1.7.0
 	github.com/google/go-github/v84 v84.0.0
 	github.com/grokify/gogithub v0.12.1
 	github.com/grokify/mogo v0.74.5
