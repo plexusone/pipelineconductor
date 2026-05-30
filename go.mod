@@ -6,7 +6,7 @@ require (
 	github.com/cedar-policy/cedar-go v1.6.1
 	github.com/google/go-github/v84 v84.0.0
 	github.com/grokify/gogithub v0.12.1
-	github.com/grokify/mogo v0.74.4
+	github.com/grokify/mogo v0.74.5
 	github.com/plexusone/dashforge v0.3.0
 	golang.org/x/oauth2 v0.36.0
 	gopkg.in/yaml.v3 v3.0.1
