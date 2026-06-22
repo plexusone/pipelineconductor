@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/go-github/v84/github"
+	"github.com/google/go-github/v88/github"
 	"github.com/grokify/gogithub/repo"
 	"github.com/grokify/mogo/net/http/retryhttp"
 	"golang.org/x/oauth2"
@@ -44,12 +44,12 @@ func DefaultOptions() Options {
 }
 
 // NewGitHubCollector creates a new GitHub collector with the given token.
-func NewGitHubCollector(_ context.Context, token string) *GitHubCollector {
+func NewGitHubCollector(_ context.Context, token string) (*GitHubCollector, error) {
 	return NewGitHubCollectorWithOptions(token, DefaultOptions())
 }
 
 // NewGitHubCollectorWithOptions creates a new GitHub collector with custom options.
-func NewGitHubCollectorWithOptions(token string, opts Options) *GitHubCollector {
+func NewGitHubCollectorWithOptions(token string, opts Options) (*GitHubCollector, error) {
 	// Create OAuth2 transport
 	ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: token})
 	oauthTransport := &oauth2.Transport{
@@ -68,10 +68,14 @@ func NewGitHubCollectorWithOptions(token string, opts Options) *GitHubCollector 
 	)
 
 	httpClient := &http.Client{Transport: retryTransport}
-	return &GitHubCollector{
-		client: github.NewClient(httpClient),
-		logger: opts.Logger,
+	client, err := github.NewClient(github.WithHTTPClient(httpClient))
+	if err != nil {
+		return nil, fmt.Errorf("creating GitHub client: %w", err)
 	}
+	return &GitHubCollector{
+		client: client,
+		logger: opts.Logger,
+	}, nil
 }
 
 // shouldRetryGitHub determines if a GitHub API request should be retried.
