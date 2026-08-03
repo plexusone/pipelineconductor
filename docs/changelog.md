@@ -4,6 +4,14 @@ This page provides a summary of releases. For detailed changes with commit links
 
 ## Releases
 
+### [v0.3.0](releases/v0.3.0.md) - 2026-08-02
+
+**Highlights:**
+
+- `pipelineconductor` CLI now published as part of the repository and installable via `go install`
+- Migrated off `go-github` onto `gogithub` v0.17.0's version-isolated `clientv1.Client`
+- Dashboard dependency renamed from `dashforge` to `uiforge` v0.4.0
+
 ### [v0.2.0](releases/v0.2.0.md) - 2026-04-25
 
 **Highlights:**

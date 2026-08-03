@@ -7,6 +7,28 @@
   "maintainers": ["grokify"],
   "releases": [
     {
+      "version": "v0.3.0",
+      "date": "2026-08-02",
+      "highlights": [
+        { "description": "The `pipelineconductor` CLI is now published as part of the repository and installable via `go install`", "commit": "7325772" },
+        { "description": "Migrated off `go-github` onto `gogithub` v0.17.0's version-isolated `clientv1.Client`; `github.com/google/go-github` is now only a transitive dependency", "commit": "f9ee095" },
+        { "description": "Dashboard dependency renamed from `dashforge` to `uiforge` v0.4.0", "commit": "6b7474f" }
+      ],
+      "added": [
+        { "description": "`cmd/pipelineconductor`: CLI source (main.go, root.go, version/check/scan/validate/remediate/apply subcommands) now published in the repository", "commit": "7325772" }
+      ],
+      "fixed": [
+        { "description": "Migrate `github.com/plexusone/dashforge` import to `github.com/plexusone/uiforge` v0.4.0 (dashforge module path is no longer published)", "commit": "6b7474f" }
+      ],
+      "dependencies": [
+        { "description": "`internal/collector.GitHubCollector` now wraps `gogithub/clientv1.Client` instead of a raw `*github.Client`; bump `github.com/grokify/gogithub` to v0.17.0, drop direct `github.com/google/go-github` requirement", "commit": "f9ee095" },
+        { "description": "Add `github.com/plexusone/uiforge` v0.4.0, replacing `github.com/plexusone/dashforge` v0.3.0", "commit": "6b7474f" },
+        { "description": "Routine `go mod` dependency updates (`go.yaml.in/yaml/v3` v3.0.5)", "commit": "e5df463" },
+        { "description": "Bump `github.com/grokify/gogithub` from 0.13.0 to 0.14.0 (dependabot)", "commit": "dd46d4f" },
+        { "description": "Bump `actions/setup-go` from 6 to 7 (dependabot)", "commit": "8b062ef" }
+      ]
+    },
+    {
       "version": "v0.2.0",
       "date": "2026-04-25",
       "highlights": [
