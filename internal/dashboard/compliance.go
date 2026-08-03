@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/plexusone/dashforge/dashboardir"
 	"github.com/plexusone/pipelineconductor/pkg/model"
+	"github.com/plexusone/uiforge/dashboardir"
 )
 
-// GenerateComplianceDashboard creates a Dashforge dashboard from a CheckResult.
+// GenerateComplianceDashboard creates a UIForge dashboard from a CheckResult.
 func GenerateComplianceDashboard(result *model.CheckResult, dataURL string) *dashboardir.Dashboard {
 	// Build title from config
 	var sources []string

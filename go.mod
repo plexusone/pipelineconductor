@@ -1,12 +1,12 @@
 module github.com/plexusone/pipelineconductor
 
-go 1.26.2
+go 1.26.5
 
 require (
 	github.com/cedar-policy/cedar-go v1.8.0
 	github.com/grokify/gogithub v0.17.0
 	github.com/grokify/mogo v0.74.6
-	github.com/plexusone/dashforge v0.3.0
+	github.com/plexusone/uiforge v0.4.0
 	github.com/spf13/cobra v1.10.2
 	github.com/spf13/viper v1.21.0
 	golang.org/x/oauth2 v0.36.0
@@ -19,7 +19,7 @@ require (
 	github.com/google/go-github/v89 v89.0.0 // indirect
 	github.com/google/go-querystring v1.2.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
-	github.com/pelletier/go-toml/v2 v2.3.1 // indirect
+	github.com/pelletier/go-toml/v2 v2.4.3 // indirect
 	github.com/sagikazarmark/locafero v0.12.0 // indirect
 	github.com/spf13/afero v1.15.0 // indirect
 	github.com/spf13/cast v1.10.0 // indirect
