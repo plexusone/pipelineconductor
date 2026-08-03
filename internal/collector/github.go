@@ -2,16 +2,14 @@ package collector
 
 import (
 	"context"
-	"encoding/base64"
 	"fmt"
 	"log/slog"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 
-	"github.com/google/go-github/v88/github"
-	"github.com/grokify/gogithub/repo"
+	"github.com/grokify/gogithub"
+	"github.com/grokify/gogithub/clientv1"
 	"github.com/grokify/mogo/net/http/retryhttp"
 	"golang.org/x/oauth2"
 
@@ -20,7 +18,7 @@ import (
 
 // GitHubCollector collects repository data from GitHub.
 type GitHubCollector struct {
-	client *github.Client
+	client clientv1.Client
 	logger *slog.Logger
 }
 
@@ -68,7 +66,7 @@ func NewGitHubCollectorWithOptions(token string, opts Options) (*GitHubCollector
 	)
 
 	httpClient := &http.Client{Transport: retryTransport}
-	client, err := github.NewClient(github.WithHTTPClient(httpClient))
+	client, err := clientv1.NewClientWithHTTP(httpClient)
 	if err != nil {
 		return nil, fmt.Errorf("creating GitHub client: %w", err)
 	}
@@ -149,7 +147,7 @@ func makeOnRetryCallback(logger *slog.Logger, verbose bool) func(int, *http.Requ
 }
 
 // NewGitHubCollectorWithClient creates a collector with a custom GitHub client.
-func NewGitHubCollectorWithClient(client *github.Client) *GitHubCollector {
+func NewGitHubCollectorWithClient(client clientv1.Client) *GitHubCollector {
 	return &GitHubCollector{client: client}
 }
 
@@ -219,37 +217,24 @@ func (c *GitHubCollector) ListReposMultiSource(ctx context.Context, orgs, users 
 }
 
 func (c *GitHubCollector) listUserRepos(ctx context.Context, user string, filter model.RepoFilter) ([]model.Repo, error) {
-	opts := &github.RepositoryListByUserOptions{
-		Type:        "owner",
-		Sort:        "updated",
-		ListOptions: github.ListOptions{PerPage: 100},
+	ghRepos, err := c.client.ListUserReposWithOptions(ctx, user, &clientv1.ListUserReposOptions{Type: "owner"})
+	if err != nil {
+		return nil, err
 	}
 
 	var repos []model.Repo
-	for {
-		ghRepos, resp, err := c.client.Repositories.ListByUser(ctx, user, opts)
-		if err != nil {
-			return nil, err
+	for _, gr := range ghRepos {
+		r := convertGitHubRepo(gr)
+		if r.Matches(filter) {
+			repos = append(repos, r)
 		}
-
-		for _, gr := range ghRepos {
-			r := convertGitHubRepo(gr)
-			if r.Matches(filter) {
-				repos = append(repos, r)
-			}
-		}
-
-		if resp.NextPage == 0 {
-			break
-		}
-		opts.Page = resp.NextPage
 	}
 
 	return repos, nil
 }
 
 func (c *GitHubCollector) listOrgRepos(ctx context.Context, org string, filter model.RepoFilter) ([]model.Repo, error) {
-	ghRepos, err := repo.ListOrgRepos(ctx, c.client, org)
+	ghRepos, err := c.client.ListOrgRepos(ctx, org)
 	if err != nil {
 		return nil, err
 	}
@@ -267,21 +252,21 @@ func (c *GitHubCollector) listOrgRepos(ctx context.Context, org string, filter m
 
 // GetWorkflows returns workflow files for a repository.
 func (c *GitHubCollector) GetWorkflows(ctx context.Context, repo model.Repo) ([]model.Workflow, error) {
-	workflows, _, err := c.client.Actions.ListWorkflows(ctx, repo.Owner, repo.Name, &github.ListOptions{PerPage: 100})
+	workflows, err := c.client.ListWorkflows(ctx, repo.Owner, repo.Name)
 	if err != nil {
 		return nil, fmt.Errorf("listing workflows: %w", err)
 	}
 
 	var result []model.Workflow
-	for _, wf := range workflows.Workflows {
+	for _, wf := range workflows {
 		workflow := model.Workflow{
-			Name:  wf.GetName(),
-			Path:  wf.GetPath(),
-			State: wf.GetState(),
+			Name:  wf.Name,
+			Path:  wf.Path,
+			State: wf.State,
 		}
 
 		// Fetch workflow content
-		content, err := c.GetFileContent(ctx, repo, wf.GetPath())
+		content, err := c.GetFileContent(ctx, repo, wf.Path)
 		if err == nil {
 			workflow.Content = content
 		}
@@ -294,12 +279,12 @@ func (c *GitHubCollector) GetWorkflows(ctx context.Context, repo model.Repo) ([]
 
 // GetBranchProtection returns branch protection settings.
 func (c *GitHubCollector) GetBranchProtection(ctx context.Context, repo model.Repo, branch string) (*model.BranchProtection, error) {
-	protection, resp, err := c.client.Repositories.GetBranchProtection(ctx, repo.Owner, repo.Name, branch)
+	protection, err := c.client.GetBranchProtection(ctx, repo.Owner, repo.Name, branch)
 	if err != nil {
-		if resp != nil && resp.StatusCode == 404 {
-			return &model.BranchProtection{Branch: branch, Enabled: false}, nil
-		}
 		return nil, fmt.Errorf("getting branch protection: %w", err)
+	}
+	if protection == nil {
+		return &model.BranchProtection{Branch: branch, Enabled: false}, nil
 	}
 
 	bp := &model.BranchProtection{
@@ -315,79 +300,56 @@ func (c *GitHubCollector) GetBranchProtection(ctx context.Context, repo model.Re
 	if protection.RequiredStatusChecks != nil {
 		bp.RequireStatusChecks = true
 		if protection.RequiredStatusChecks.Contexts != nil {
-			bp.RequiredStatusChecks = *protection.RequiredStatusChecks.Contexts
+			bp.RequiredStatusChecks = protection.RequiredStatusChecks.Contexts
 		}
 	}
 
-	if protection.EnforceAdmins != nil {
-		bp.EnforceAdmins = protection.EnforceAdmins.Enabled
-	}
-
-	if protection.RequiredSignatures != nil && protection.RequiredSignatures.Enabled != nil {
-		bp.RequireSignedCommits = *protection.RequiredSignatures.Enabled
-	}
-
-	if protection.AllowForcePushes != nil {
-		bp.AllowForcePushes = protection.AllowForcePushes.Enabled
-	}
-
-	if protection.AllowDeletions != nil {
-		bp.AllowDeletions = protection.AllowDeletions.Enabled
-	}
+	bp.EnforceAdmins = protection.EnforceAdmins
+	bp.RequireSignedCommits = protection.RequireSignedCommits
+	bp.AllowForcePushes = protection.AllowForcePushes
+	bp.AllowDeletions = protection.AllowDeletions
 
 	return bp, nil
 }
 
 // GetLatestWorkflowRun returns the most recent workflow run.
 func (c *GitHubCollector) GetLatestWorkflowRun(ctx context.Context, repo model.Repo, workflowID int64) (*model.WorkflowRun, error) {
-	runs, _, err := c.client.Actions.ListWorkflowRunsByID(ctx, repo.Owner, repo.Name, workflowID, &github.ListWorkflowRunsOptions{
-		ListOptions: github.ListOptions{PerPage: 1},
-	})
+	runs, err := c.client.ListWorkflowRuns(ctx, repo.Owner, repo.Name, workflowID, &clientv1.ListWorkflowRunsOptions{PerPage: 1})
 	if err != nil {
 		return nil, fmt.Errorf("listing workflow runs: %w", err)
 	}
 
-	if len(runs.WorkflowRuns) == 0 {
+	if len(runs) == 0 {
 		return nil, nil
 	}
 
-	run := runs.WorkflowRuns[0]
+	run := runs[0]
 	return &model.WorkflowRun{
-		ID:         run.GetID(),
-		WorkflowID: run.GetWorkflowID(),
-		Name:       run.GetName(),
-		Status:     run.GetStatus(),
-		Conclusion: run.GetConclusion(),
-		Branch:     run.GetHeadBranch(),
-		HeadSHA:    run.GetHeadSHA(),
-		CreatedAt:  run.GetCreatedAt().Time,
-		UpdatedAt:  run.GetUpdatedAt().Time,
-		HTMLURL:    run.GetHTMLURL(),
+		ID:         run.ID,
+		WorkflowID: run.WorkflowID,
+		Name:       run.Name,
+		Status:     run.Status,
+		Conclusion: run.Conclusion,
+		Branch:     run.HeadBranch,
+		HeadSHA:    run.HeadSHA,
+		CreatedAt:  run.CreatedAt,
+		UpdatedAt:  run.UpdatedAt,
+		HTMLURL:    run.HTMLURL,
 	}, nil
 }
 
 // GetFileContent returns the content of a file from a repository.
 func (c *GitHubCollector) GetFileContent(ctx context.Context, repo model.Repo, path string) (string, error) {
-	content, _, _, err := c.client.Repositories.GetContents(ctx, repo.Owner, repo.Name, path, nil)
+	content, err := c.client.GetFileContentString(ctx, repo.Owner, repo.Name, path, nil)
 	if err != nil {
 		return "", fmt.Errorf("getting file content: %w", err)
 	}
-
-	if content.Content == nil {
-		return "", fmt.Errorf("file content is nil")
-	}
-
-	decoded, err := base64.StdEncoding.DecodeString(strings.ReplaceAll(*content.Content, "\n", ""))
-	if err != nil {
-		return "", fmt.Errorf("decoding content: %w", err)
-	}
-
-	return string(decoded), nil
+	return content, nil
 }
 
 // GetLanguages returns the languages used in a repository.
 func (c *GitHubCollector) GetLanguages(ctx context.Context, repo model.Repo) ([]string, error) {
-	langs, _, err := c.client.Repositories.ListLanguages(ctx, repo.Owner, repo.Name)
+	langs, err := c.client.ListLanguages(ctx, repo.Owner, repo.Name)
 	if err != nil {
 		return nil, fmt.Errorf("listing languages: %w", err)
 	}
@@ -399,34 +361,31 @@ func (c *GitHubCollector) GetLanguages(ctx context.Context, repo model.Repo) ([]
 	return result, nil
 }
 
-func convertGitHubRepo(gr *github.Repository) model.Repo {
+func convertGitHubRepo(gr *gogithub.Repository) model.Repo {
+	owner := ""
+	if gr.Owner != nil {
+		owner = gr.Owner.Login
+	}
+
 	repo := model.Repo{
-		Owner:         gr.GetOwner().GetLogin(),
-		Name:          gr.GetName(),
-		FullName:      gr.GetFullName(),
-		DefaultBranch: gr.GetDefaultBranch(),
-		Visibility:    gr.GetVisibility(),
-		Archived:      gr.GetArchived(),
-		Fork:          gr.GetFork(),
-		HTMLURL:       gr.GetHTMLURL(),
-		CloneURL:      gr.GetCloneURL(),
+		Owner:         owner,
+		Name:          gr.Name,
+		FullName:      gr.FullName,
+		DefaultBranch: gr.DefaultBranch,
+		Visibility:    gr.Visibility,
+		Archived:      gr.Archived,
+		Fork:          gr.Fork,
+		HTMLURL:       gr.HTMLURL,
+		CloneURL:      gr.CloneURL,
+		CreatedAt:     gr.CreatedAt,
+		UpdatedAt:     gr.UpdatedAt,
+		PushedAt:      gr.PushedAt,
+		Topics:        gr.Topics,
 	}
 
-	if gr.Language != nil {
-		repo.PrimaryLanguage = *gr.Language
-		repo.Languages = []string{*gr.Language}
-	}
-
-	repo.Topics = gr.Topics
-
-	if gr.CreatedAt != nil {
-		repo.CreatedAt = gr.CreatedAt.Time
-	}
-	if gr.UpdatedAt != nil {
-		repo.UpdatedAt = gr.UpdatedAt.Time
-	}
-	if gr.PushedAt != nil {
-		repo.PushedAt = gr.PushedAt.Time
+	if gr.Language != "" {
+		repo.PrimaryLanguage = gr.Language
+		repo.Languages = []string{gr.Language}
 	}
 
 	return repo
