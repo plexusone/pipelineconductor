@@ -2,110 +2,114 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://plexusone.github.io/pipelineconductor/</loc>
-         <lastmod>2026-04-26</lastmod>
+         <lastmod>2026-08-03</lastmod>
     </url>
     <url>
          <loc>https://plexusone.github.io/pipelineconductor/changelog/</loc>
-         <lastmod>2026-04-26</lastmod>
+         <lastmod>2026-08-03</lastmod>
     </url>
     <url>
          <loc>https://plexusone.github.io/pipelineconductor/contributing/</loc>
-         <lastmod>2026-04-26</lastmod>
+         <lastmod>2026-08-03</lastmod>
     </url>
     <url>
          <loc>https://plexusone.github.io/pipelineconductor/installation/</loc>
-         <lastmod>2026-04-26</lastmod>
+         <lastmod>2026-08-03</lastmod>
     </url>
     <url>
          <loc>https://plexusone.github.io/pipelineconductor/quickstart/</loc>
-         <lastmod>2026-04-26</lastmod>
+         <lastmod>2026-08-03</lastmod>
     </url>
     <url>
          <loc>https://plexusone.github.io/pipelineconductor/roadmap/</loc>
-         <lastmod>2026-04-26</lastmod>
+         <lastmod>2026-08-03</lastmod>
     </url>
     <url>
          <loc>https://plexusone.github.io/pipelineconductor/cli/apply/</loc>
-         <lastmod>2026-04-26</lastmod>
+         <lastmod>2026-08-03</lastmod>
     </url>
     <url>
          <loc>https://plexusone.github.io/pipelineconductor/cli/check/</loc>
-         <lastmod>2026-04-26</lastmod>
+         <lastmod>2026-08-03</lastmod>
     </url>
     <url>
          <loc>https://plexusone.github.io/pipelineconductor/cli/config/</loc>
-         <lastmod>2026-04-26</lastmod>
+         <lastmod>2026-08-03</lastmod>
     </url>
     <url>
          <loc>https://plexusone.github.io/pipelineconductor/cli/overview/</loc>
-         <lastmod>2026-04-26</lastmod>
+         <lastmod>2026-08-03</lastmod>
     </url>
     <url>
          <loc>https://plexusone.github.io/pipelineconductor/cli/remediate/</loc>
-         <lastmod>2026-04-26</lastmod>
+         <lastmod>2026-08-03</lastmod>
     </url>
     <url>
          <loc>https://plexusone.github.io/pipelineconductor/cli/scan/</loc>
-         <lastmod>2026-04-26</lastmod>
+         <lastmod>2026-08-03</lastmod>
     </url>
     <url>
          <loc>https://plexusone.github.io/pipelineconductor/cli/validate/</loc>
-         <lastmod>2026-04-26</lastmod>
+         <lastmod>2026-08-03</lastmod>
     </url>
     <url>
          <loc>https://plexusone.github.io/pipelineconductor/integration/github-actions/</loc>
-         <lastmod>2026-04-26</lastmod>
+         <lastmod>2026-08-03</lastmod>
     </url>
     <url>
          <loc>https://plexusone.github.io/pipelineconductor/integration/workflows/</loc>
-         <lastmod>2026-04-26</lastmod>
+         <lastmod>2026-08-03</lastmod>
     </url>
     <url>
          <loc>https://plexusone.github.io/pipelineconductor/policies/builtin/</loc>
-         <lastmod>2026-04-26</lastmod>
+         <lastmod>2026-08-03</lastmod>
     </url>
     <url>
          <loc>https://plexusone.github.io/pipelineconductor/policies/cedar-syntax/</loc>
-         <lastmod>2026-04-26</lastmod>
+         <lastmod>2026-08-03</lastmod>
     </url>
     <url>
          <loc>https://plexusone.github.io/pipelineconductor/policies/examples/</loc>
-         <lastmod>2026-04-26</lastmod>
+         <lastmod>2026-08-03</lastmod>
     </url>
     <url>
          <loc>https://plexusone.github.io/pipelineconductor/policies/overview/</loc>
-         <lastmod>2026-04-26</lastmod>
+         <lastmod>2026-08-03</lastmod>
     </url>
     <url>
          <loc>https://plexusone.github.io/pipelineconductor/policies/writing/</loc>
-         <lastmod>2026-04-26</lastmod>
+         <lastmod>2026-08-03</lastmod>
     </url>
     <url>
          <loc>https://plexusone.github.io/pipelineconductor/profiles/builtin/</loc>
-         <lastmod>2026-04-26</lastmod>
+         <lastmod>2026-08-03</lastmod>
     </url>
     <url>
          <loc>https://plexusone.github.io/pipelineconductor/profiles/custom/</loc>
-         <lastmod>2026-04-26</lastmod>
+         <lastmod>2026-08-03</lastmod>
     </url>
     <url>
          <loc>https://plexusone.github.io/pipelineconductor/profiles/overview/</loc>
-         <lastmod>2026-04-26</lastmod>
+         <lastmod>2026-08-03</lastmod>
     </url>
     <url>
          <loc>https://plexusone.github.io/pipelineconductor/releases/v0.1.0/</loc>
-         <lastmod>2026-04-26</lastmod>
+         <lastmod>2026-08-03</lastmod>
     </url>
     <url>
          <loc>https://plexusone.github.io/pipelineconductor/releases/v0.2.0/</loc>
-         <lastmod>2026-04-26</lastmod>
+         <lastmod>2026-08-03</lastmod>
+    </url>
+    <url>
+         <loc>https://plexusone.github.io/pipelineconductor/releases/v0.3.0/</loc>
+         <lastmod>2026-08-03</lastmod>
     </url>
     <url>
          <loc>https://plexusone.github.io/pipelineconductor/reports/formats/</loc>
-         <lastmod>2026-04-26</lastmod>
+         <lastmod>2026-08-03</lastmod>
     </url>
     <url>
          <loc>https://plexusone.github.io/pipelineconductor/reports/sarif/</loc>
-         <lastmod>2026-04-26</lastmod>
+         <lastmod>2026-08-03</lastmod>
     </url>
 </urlset>
