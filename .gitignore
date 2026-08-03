@@ -8,7 +8,7 @@ main
 main.zip
 
 # Binary
-pipelineconductor
+/pipelineconductor
 
 # MkDocs generated site
 site/
