@@ -5,7 +5,7 @@ go 1.26.5
 require (
 	github.com/cedar-policy/cedar-go v1.8.0
 	github.com/grokify/gogithub v0.17.0
-	github.com/grokify/mogo v0.74.6
+	github.com/grokify/mogo v0.74.7
 	github.com/plexusone/uiforge v0.4.0
 	github.com/spf13/cobra v1.10.2
 	github.com/spf13/viper v1.21.0
