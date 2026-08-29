@@ -5,7 +5,7 @@ go 1.26.5
 require (
 	github.com/cedar-policy/cedar-go v1.8.0
 	github.com/grokify/gogithub v0.17.0
-	github.com/grokify/mogo v0.74.7
+	github.com/grokify/mogo v0.74.8
 	github.com/plexusone/uiforge v0.5.0
 	github.com/spf13/cobra v1.10.2
 	github.com/spf13/viper v1.21.0
@@ -26,7 +26,7 @@ require (
 	github.com/spf13/pflag v1.0.10 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
-	golang.org/x/exp v0.0.0-20260813180055-c1d0aacb2297 // indirect
+	golang.org/x/exp v0.0.0-20260820142414-ca536658362e // indirect
 	golang.org/x/sys v0.47.0 // indirect
 	golang.org/x/text v0.41.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
